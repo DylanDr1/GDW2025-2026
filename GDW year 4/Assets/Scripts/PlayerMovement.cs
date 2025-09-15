@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private bool canMove = true;
 
     private CharacterController characterController;
-    public string GameEndedName;
+    //public string GameEndedName;
 
    
     private MovingPlat currentPlatform;
@@ -104,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.tag == "Death")
         {
-            SceneManager.LoadScene(GameEndedName);
+           // SceneManager.LoadScene(GameEndedName);
         }
     }
 }
