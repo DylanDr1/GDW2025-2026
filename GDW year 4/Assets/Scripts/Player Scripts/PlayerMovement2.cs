@@ -7,7 +7,7 @@ public class PlayerMovement2 : MonoBehaviour
     [Header("Controller Additions")]
     public CharacterController characterController;
     public Transform cam;
-
+    private MovingPlat currentPlatform;
 
     public Animator animator;
 
@@ -78,7 +78,30 @@ public class PlayerMovement2 : MonoBehaviour
 
 
     }
+    private void ApplyPlatformMovement()
+    {
+        currentPlatform = null;
 
+
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, characterController.height / 2f + 0.3f))
+        {
+            MovingPlat plat = hit.collider.GetComponent<MovingPlat>();
+            if (plat != null)
+            {
+
+                if (Vector3.Angle(hit.normal, Vector3.up) <= characterController.slopeLimit)
+                {
+                    currentPlatform = plat;
+                }
+            }
+        }
+
+        if (currentPlatform != null && currentPlatform.Delta != Vector3.zero)
+        {
+
+            characterController.Move(currentPlatform.Delta);
+        }
+    }
     private void States()
     {
 
@@ -89,7 +112,7 @@ public class PlayerMovement2 : MonoBehaviour
             if (transformVelocity.y < 0)
             {
                 isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-                if(isGrounded)
+                if (isGrounded)
                 {
                     canDoubleJump = true;
                 }
@@ -105,7 +128,7 @@ public class PlayerMovement2 : MonoBehaviour
             {
                 float horizontal = Input.GetAxisRaw("Horizontal");
                 float vertical = Input.GetAxisRaw("Vertical");
-
+                ApplyPlatformMovement();
                 //handles turning
                 Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
                 if (canMove)
@@ -263,7 +286,7 @@ public class PlayerMovement2 : MonoBehaviour
             {
                 float horizontal = Input.GetAxisRaw("Horizontal");
                 float vertical = Input.GetAxisRaw("Vertical");
-
+                
                 //handles turning
                 Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
                 if (canMove)
@@ -361,7 +384,7 @@ public class PlayerMovement2 : MonoBehaviour
         canDash = false;
         canAttack = false;
         canMove = false;
-       // animator.SetBool("Rolling", true);
+        // animator.SetBool("Rolling", true);
         Vector3 forward = transform.TransformDirection(Vector3.forward);
 
         float startTime = Time.time;
@@ -372,7 +395,7 @@ public class PlayerMovement2 : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.5f);
-       // animator.SetBool("Rolling", false);
+        // animator.SetBool("Rolling", false);
         canMove = true;
         canDash = true;
         canAttack = true;
